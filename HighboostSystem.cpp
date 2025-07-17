@@ -62,24 +62,26 @@ void HighboostSystem::setData(Mesh* _mesh) {
 		_highboost._Fnbfaces[n] = _mesh->_FnbFace[n];
 	}
 }
+
 void HighboostSystem::free() {
 	_highboost.free(); 
 }
+
 void HighboostSystem::update() {
-	_highboost.copyHtoD(_numV, _numF, _numVnb, _numFnb);
-#ifdef BILATERALGPU
+	_highboost.copyHtoD(_numV, _numF, _numVnb, _numFnb);				//CPU -> GPU
+//#ifdef BILATERALGPU
 	int numThreadF, numBlockF;
 	computeGridSize(_numF, 32, numBlockF, numThreadF);
-	_kernel.calcBoost(_highboost, numBlockF, numThreadF, 70, 70);
-#endif // BILATERALGPU
+	_kernel.calcBoost(_highboost, numBlockF, numThreadF, 70, 70);		//BoostNormal에 양방향 필터 적용
+//#endif
 
-#ifdef GRADIENTGPU
+//#ifdef GRADIENTGPU
 	int numThreadV, numBlockV;
 	computeGridSize(_numV, 32, numBlockV, numThreadV);
-	_kernel.calcGradient(_highboost, numBlockV, numThreadV,_iterate, _learningrate);
-#endif
+	_kernel.calcGradient(_highboost, numBlockV, numThreadV,_iterate, _learningrate); //경사하강법으로 새로운 위치 계산
+//#endif
 
-	_highboost.copyDtoH(_numV, _numF, _numVnb, _numFnb);
+	_highboost.copyDtoH(_numV, _numF, _numVnb, _numFnb);				//GPU -> CPU
 }
 
 void HighboostSystem::applyMesh(Mesh* _mesh) {
