@@ -1,14 +1,15 @@
-⚠️ 본 저장소에는 지도 교수님께서 제공하신 3D Mesh 관련 코드가 비공개로 유지되어, 연구에서 사용된 전체 코드가 포함되어 있지 않습니다. <br>
-이로 인해 본 저장소의 코드만으로는 프로젝트 전체를 실행할 수 없고, GPU 연산 및 관련 서브모듈만 포함되어 있음을 알려드립니다. <br>
+⚠️ 본 저장소에는 지도 교수님께서 제공하신 3D Mesh 관련 코드가 비공개로 유지되어,<br> 
+연구에서 사용된 전체 코드가 포함되어 있지 않습니다. <br>
+이로 인해 본 저장소의 코드만으로는 프로젝트 전체를 실행할 수 없고,<br>
+GPU 연산 및 관련 서브모듈만 포함되어 있음을 알려드립니다. <br>
+<hr>
 
-# [요약]
+# [ Summary ]
+High-Boost Mesh Filtering의 문제점인 `Aliasing(계단현상)`과 `Mesh irreguralization(불규칙화)`을 개선하기 위해<br>
+Mesh 형상을 강화하는데 사용하는 **Boosted Normal에 Bilateral Filter를 적용**한다.<br>
 
-본 프로젝트는 High-Boost Mesh Filtering에 Bilateral Filter를 적용하여 Mesh irreguralization을 해결함으로써 Mesh의 과장을 안정적으로 표현할 수 있도록 하였다.
-또한 Mesh Saliency를 기반으로, Saliency 방향성을 기존 필터링에 통합하여 aliasing 발생을 방지 및 완화하였으며 이를 GPU 기반에서 설계하여 고속화하였다.
-(GPU 기반 코드는 별도로 정리하였다.)
-
-# [선행 연구]
-[High-Boost Mesh Filtering이란?]
+# [연구 목표]
+## [High-Boost Mesh Filtering이란?]
 2D 이미지 처리에서 사용되는 샤프닝 알고리즘을 3D Mesh에 적용하도록 고안된 알고리즘이다.
 
 ![image](https://github.com/user-attachments/assets/05d91462-293f-40a4-a6bc-1d137d11596b)
