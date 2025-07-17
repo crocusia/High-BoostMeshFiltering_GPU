@@ -102,11 +102,15 @@ __device__ double3 calcdistD(int3 fid1, int3 fid2, double3* _vertex) {
 	result = subVecD(centerF1, centerF2);
 	return result;
 }
+
+//양방향 필터 - 거리 차이 가우시안
 __device__ double gaussiandistD(double value, double sigma) {
 	double result = 0.0;
 	result = exp(-(value * value) / (2*sigma*sigma)) / (2*3.14*sigma*sigma);
 	return result;
 }
+
+//양방향 필터 - BoostNormalVector 가우시안
 __device__ double3 gaussiandiffD(double3 value, double sigma) {
 	double3 result = make_double3(0.0, 0.0, 0.0);
 	result.x = exp(-(value.x * value.x) / (2 * sigma * sigma)) / (2 * 3.14 * sigma * sigma);
@@ -114,6 +118,8 @@ __device__ double3 gaussiandiffD(double3 value, double sigma) {
 	result.z = exp(-(value.z * value.z) / (2 * sigma * sigma)) / (2 * 3.14 * sigma * sigma);
 	return result;
 }
+
+//양방향 필터 계산
 __global__ void calcBilateralD(HighboostDevice _hbd, int sigmaDist, int sigmaValue) {
 	int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -156,6 +162,7 @@ __global__ void updateBoostD(HighboostDevice _hbd) {
 	_hbd._devBNorm[tid] = _hbd._devSmooth[tid];
 }
 
+//경사하강법으로 새로운 위치 계산
 __global__ void calcGradientD(HighboostDevice _hbd) {
 	int tid = blockIdx.x * blockDim.x + threadIdx.x;  //vertex index
 	int start = _hbd._dVnbStart[tid];
