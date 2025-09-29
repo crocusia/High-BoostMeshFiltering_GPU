@@ -13,7 +13,7 @@ Mesh 형상을 강화하는 데 사용하는 **Boosted Normal에 Bilateral Filte
 Figure 1. Horse model. (a) Original one, (b) Enhanced by the high-boost mesh filtering, (c) Enhanced by the high-boost mesh filtering With Bilateral Filter
 
 - 기존 기술의 문제점 개선 및 안정적인 Mesh 강화
-- GPU 기반 병렬화로 3배 이상 고속화
+- GPU 기반 병렬화로 6배 이상 고속화
 
 
 # 연구 목표
@@ -47,7 +47,7 @@ Hirokazu Yagou 외 2인은 필터링이 적용된 결과물에 Laplacian Smoothi
 
 ### 💡양방향 필터 적용 이유
 - High-Boost Mesh Filtering이 2D 기반 알고리즘을 3D로 확장한 기법이므로,<br>
-2D에서 사용하는 잡음 제거 방법을 적용하는 것이 효과적일 것이라 판단하였다.
+2D에서 사용하는 잡음 제거 방법을 적용하는 것이 효과적일 것이라 판단
 - 잡음 제거 알고리즘 중 **Edge 보존 가능 여부**를 중점으로 비교 후, Bilateral Filter 선정
 
 ## ✅ 적용 방법
@@ -60,6 +60,26 @@ Figure 4. Proposed Method Overview and Bilateral Filtering Integration Point
 
 <hr>
 
+## 병목 현상 고속화
+<img width="600" height="371" alt="병목 측정 결과(x_ face 개수, y_ sec) " src="https://github.com/user-attachments/assets/f5e5ee8e-7086-4b24-a86b-9ac310cecd8c" />
+
+- 알고리즘 단계 중 Gradient Descent 연산에서 가장 큰 병목이 발생
+
+### Compressed Sparse Row 구조의 인접 정보 표현
+<img width="482" height="157" alt="image" src="https://github.com/user-attachments/assets/1ebcf5fd-fa90-4b90-85d8-9bc0b7efde49" />
+
+- CUDA는 정적으로 GPU 메모리를 할당하므로 CPU에서 사용하던 동적 배열 방식으로 인접 정보를 표현핟기 어려움
+- 인접 행렬 사용 시의 메모리 낭비와 특정 행 전체 순회로 인한 성능 저하 우려 <br>
+✅ CSR 기반 데이터 구조로 병렬 처리에서 인접 정보를 효율적으로 탐색
+
 # 결과
+<img width="1408" height="531" alt="KakaoTalk_20250929_123635212" src="https://github.com/user-attachments/assets/89982852-6eec-4038-a20a-c7c4514515b9" />
 
+- 양방향 필터를 통한 잡음 제거로 전체적인 강화를 억제해 Mesh가 더 자연스러운 형태로 강화
+- 기존 방법에서 High-Boost Mesh Filtering 적용 후 별도의 smoothing 후처리의 필요성이 감소
+  
+## GPU 기반 고속화
+<img width="600" height="371" alt="calcGradient CPU와 GPU 비교 (x _ face 개수, y _ sec) (1)" src="https://github.com/user-attachments/assets/ab5c741a-2e79-4263-9588-d5f81fdbd659" />
 
+- face 34만개 기준, 6배 이상 성능 개선
+- face 크기가 커질수록 성능 차이가 커짐
